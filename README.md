@@ -21,6 +21,6 @@ You can add in filtering parameters for the backlot REST API on line 38, current
 ### Bugs & Possible Errors
 * Too many Requests - Ooyala restricts how many API calls any one user can make in a given time period. To deal with this the app will wait 60 seconds after a failed connection to try again. If it fails again the app will crash. If this happens, simply restart the app. It will check for any video files already downloaded and skip them.
 * Bad Request - Ooyala Stores paging of the request server side, if your request expires before it is completed you will see this error, simply restart the app. It will check for any video files already downloaded and skip them.
-* File Download Remotely terimiated - Not sure why this one happens, but after the app finishes, restart it to download any missing videos.
+* File Download Remotely terminated - Not sure why this one happens, but after the app finishes, restart it to download any missing videos.
 
 Support online content. [Buy a Coffee for Alvcard with Ko-fi.com](https://ko-fi.com/G2G65JKY)
