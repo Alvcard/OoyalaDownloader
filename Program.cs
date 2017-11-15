@@ -34,7 +34,7 @@ namespace OoyalaDownloader
             OoyalaAPI api = new OoyalaAPI("<API Key>", "<Secret Key>");
             Dictionary<String, String> parameters = new Dictionary<String, String>
             {
-                { "limit", "5" },
+                { "limit", "100" },
                 { "where", "asset_type = 'video'" }
             };
 
@@ -65,32 +65,32 @@ namespace OoyalaDownloader
                     string filename = item["original_file_name"].ToString();
                     filename = filename.Replace(@"\", "");
 
-                    string videoDownloadLinks = string.Empty;
-                    try
+                    if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Downloads\\" + filename))
                     {
-                        videoDownloadLinks = JsonConvert.SerializeObject(api.get("assets/" + item["embed_code"] + "/streams", parameters));
-                        if (JArray.Parse(videoDownloadLinks) == null)
-                        {
-                            throw new Exception();
-                        }
+                        Console.WriteLine("File Existed " + filename);
                     }
-                    catch (Exception)
+                    else
                     {
-                        Console.WriteLine(DateTime.Now + " waiting 60 seonds");
-                        System.Threading.Thread.Sleep(60000);
-                        videoDownloadLinks = JsonConvert.SerializeObject(api.get("assets/" + item["embed_code"] + "/streams", parameters));
-                    }
-
-                    JArray videoDownloadResponce = JArray.Parse(videoDownloadLinks);
-                    foreach (var videoSource in videoDownloadResponce)
-                    {
-                        if (videoSource["is_source"].ToString() == "True")
+                        string videoDownloadLinks = string.Empty;
+                        try
                         {
-                            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Downloads\\" + filename))
+                            videoDownloadLinks = JsonConvert.SerializeObject(api.get("assets/" + item["embed_code"] + "/streams", parameters));
+                            if (JArray.Parse(videoDownloadLinks) == null)
                             {
-                                Console.WriteLine("File Existed " + filename);
+                                throw new Exception();
                             }
-                            else
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine(DateTime.Now + " waiting 60 seonds");
+                            System.Threading.Thread.Sleep(60000);
+                            videoDownloadLinks = JsonConvert.SerializeObject(api.get("assets/" + item["embed_code"] + "/streams", parameters));
+                        }
+
+                        JArray videoDownloadResponce = JArray.Parse(videoDownloadLinks);
+                        foreach (var videoSource in videoDownloadResponce)
+                        {
+                            if (videoSource["is_source"].ToString() == "True")
                             {
                                 OoyalaFileDownload(videoSource["url"].ToString(), filename);
                                 using (System.IO.StreamWriter file = new System.IO.StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "progress.csv", true))
@@ -104,7 +104,7 @@ namespace OoyalaDownloader
 
                 if (o["next_page"] != null)
                 {
-                    NameValueCollection qscoll = HttpUtility.ParseQueryString(cleanNextpage(o["next_page"].ToString()));
+                    NameValueCollection qscoll = HttpUtility.ParseQueryString(CleanNextpage(o["next_page"].ToString()));
 
                     foreach (var k in qscoll.AllKeys)
                     {
@@ -136,7 +136,7 @@ namespace OoyalaDownloader
             }
         }
 
-        static string cleanNextpage(string nextpage)
+        static string CleanNextpage(string nextpage)
         {
             nextpage = nextpage.Substring(11, nextpage.Length - 11);
             return nextpage;
