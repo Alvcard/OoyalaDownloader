@@ -12,6 +12,17 @@ namespace OoyalaDownloader
 {
     class Program
     {
+        private const string apiKey = "<Your Ooyala API Key>";
+        private const string secretKey = "<Your Ooyala Secret Key>";
+
+        static Dictionary<string, string> Settings(Dictionary<string, string> parameters)
+        {
+            parameters.Clear();
+            parameters.Add("limit", "100");
+            parameters.Add("where", "asset_type = 'video'");
+            return parameters;
+        }
+
         static void Main(string[] args)
         {
             // Create Download Directory
@@ -31,13 +42,10 @@ namespace OoyalaDownloader
             }
             
             // Connect to OoyalaAPI
-            OoyalaAPI api = new OoyalaAPI("<API Key>", "<Secret Key>");
-            Dictionary<String, String> parameters = new Dictionary<String, String>
-            {
-                { "limit", "100" },
-                { "where", "asset_type = 'video'" }
-            };
-
+            OoyalaAPI api = new OoyalaAPI(apiKey, secretKey);
+            Dictionary<String, String> parameters = new Dictionary<String, String>();
+            parameters = Settings(parameters);
+            
             bool NextPage = true;
 
             while (NextPage)
@@ -53,8 +61,9 @@ namespace OoyalaDownloader
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine(DateTime.Now + " waiting 60 seonds");
-                    System.Threading.Thread.Sleep(60000);
+                    Console.WriteLine(DateTime.Now + " Probably a Request Expired Error. Resetting Pramaters and re Sending");
+                    parameters = Settings(parameters);
+                    api = new OoyalaAPI(apiKey, secretKey);
                     OoyalaResponce = JsonConvert.SerializeObject(api.get("assets", parameters));
                 }
                 parameters.Clear();
@@ -82,7 +91,7 @@ namespace OoyalaDownloader
                         }
                         catch (Exception)
                         {
-                            Console.WriteLine(DateTime.Now + " waiting 60 seonds");
+                            Console.WriteLine(DateTime.Now + " Probably a 'Request limit exceeded' error, waiting 60 seonds to try again");
                             System.Threading.Thread.Sleep(60000);
                             videoDownloadLinks = JsonConvert.SerializeObject(api.get("assets/" + item["embed_code"] + "/streams", parameters));
                         }
@@ -127,7 +136,7 @@ namespace OoyalaDownloader
                 using (var client = new WebClient())
                 {
                     client.DownloadFile(url, AppDomain.CurrentDomain.BaseDirectory + "Downloads\\" + VideoTitle);
-                    Console.WriteLine(VideoTitle + " Downloaded.");
+                    Console.WriteLine(DateTime.Now + " " + VideoTitle + " Downloaded.");
                 }
             }
             catch (Exception ex)
