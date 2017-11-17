@@ -20,8 +20,9 @@ parameters.Add("where", "asset_type = 'video'");
 ```
 
 ### Bugs & Possible Errors
+Most of the errors in the app can be delt with just by restarting the app.
 * Request limit exceeded - Ooyala restricts how many API calls any one user can make in a given time period. To deal with this the app will wait 60 seconds after a failed connection to try again. If it fails again the app will crash. If this happens, simply restart the app. It will check for any video files already downloaded and skip them.
-* Request Expired - Ooyala Stores API connections for an hour, after that expires, you will get an error. Simply restart the app. It will check for any video files already downloaded and skip them.
+* Request Expired - Simply restart the app. It will check for any video files already downloaded and skip them.
 * File Download Remotely terminated - Not sure why this one happens, but after the app finishes, restart it to download any missing videos.
 
 Support online content. [Buy a Coffee for Alvcard with Ko-fi.com](https://ko-fi.com/G2G65JKY)
