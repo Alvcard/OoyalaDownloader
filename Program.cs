@@ -19,7 +19,7 @@ namespace OoyalaDownloader
         {
             parameters.Clear();
             parameters.Add("limit", "100");
-            parameters.Add("where", "asset_type = 'video'");
+            parameters.Add("where", "asset_type = 'video'");         
             return parameters;
         }
 
@@ -61,9 +61,9 @@ namespace OoyalaDownloader
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine(DateTime.Now + " Probably a Request Expired Error. Resetting Pramaters and re Sending");
+                    Console.WriteLine(DateTime.Now + " Probably a Request Expired Error. Resetting Pramaters, waiting 60 seconds and re Sending");
+                    System.Threading.Thread.Sleep(60000);
                     parameters = Settings(parameters);
-                    api = new OoyalaAPI(apiKey, secretKey);
                     OoyalaResponce = JsonConvert.SerializeObject(api.get("assets", parameters));
                 }
                 parameters.Clear();
@@ -73,6 +73,7 @@ namespace OoyalaDownloader
                 {
                     string filename = item["original_file_name"].ToString();
                     filename = filename.Replace(@"\", "");
+                    filename = filename.Replace(@":", "");
 
                     if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Downloads\\" + filename))
                     {
@@ -80,6 +81,7 @@ namespace OoyalaDownloader
                     }
                     else
                     {
+                        parameters.Clear();
                         string videoDownloadLinks = string.Empty;
                         try
                         {
